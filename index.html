@@ -44,9 +44,9 @@
     .song {
       width: 100%;
       max-width: 480px;
-      aspect-ratio: 16 / 9;
+      height: 152px;   /* Spotify's compact player height */
       border: 0;
-      border-radius: 4px;
+      border-radius: 12px;
     }
   </style>
 </head>
@@ -54,8 +54,8 @@
   <video class="scene" src="waiting.mp4" poster="poster.png" autoplay muted loop playsinline
          aria-label="A wet golden retriever puppy waits under the porch roof of a strawberry cottage while it rains. The caption says: i'll always be waiting my dear Adia."></video>
   <img class="label" src="label.png" alt="tap play for our song">
-  <iframe class="song" src="https://www.youtube.com/embed/Qw20tg1v7Fc?loop=1&amp;playlist=Qw20tg1v7Fc&amp;rel=0&amp;playsinline=1"
-          title="Steve Lacy - the feeling" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen
-          referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <iframe class="song" src="https://open.spotify.com/embed/track/1OWBh1eVxUdA1Z6UA8r4nh?theme=0"
+          title="Steve Lacy - the feeling" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"></iframe>
 </body>
 </html>
