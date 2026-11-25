@@ -36,26 +36,64 @@
       border: 4px solid #d6829c;
       box-shadow: 0 0 0 4px #603a5c, 0 12px 40px rgba(0, 0, 0, .5);
     }
-    .label {
-      width: min(100%, 432px);
-      height: auto;
+    .play {
+      width: min(100%, 387px);
+      aspect-ratio: 43 / 9;   /* button.png is 516x108 */
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      background: url(button.png) center / contain no-repeat;
       image-rendering: pixelated;
+      -webkit-tap-highlight-color: transparent;
     }
+    .play:hover { background-image: url(button_hover.png); }
+    .play:active { background-image: url(button_pressed.png); }
+    .play:focus-visible { outline: 2px solid #ffd6e2; outline-offset: 4px; }
     .song {
       width: 100%;
-      max-width: 480px;
-      height: 152px;   /* Spotify's compact player height */
+      max-width: 320px;
+      aspect-ratio: 16 / 9;
       border: 0;
-      border-radius: 12px;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
   <video class="scene" src="waiting.mp4" poster="poster.png" autoplay muted loop playsinline
          aria-label="A wet golden retriever puppy waits under the porch roof of a strawberry cottage while it rains. The caption says: i'll always be waiting my dear Adia."></video>
-  <img class="label" src="label.png" alt="tap play for our song">
-  <iframe class="song" src="https://open.spotify.com/embed/track/1OWBh1eVxUdA1Z6UA8r4nh?theme=0"
-          title="Steve Lacy - the feeling" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"></iframe>
+  <button class="play" type="button" aria-label="play our song"></button>
+  <iframe class="song" id="song" src="https://www.youtube.com/embed/Qw20tg1v7Fc?enablejsapi=1&amp;loop=1&amp;playlist=Qw20tg1v7Fc&amp;rel=0&amp;playsinline=1"
+          title="Steve Lacy - the feeling" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <script>
+    // Rain: the scene's own loop, gapless via Web Audio. Browsers only allow sound after a tap.
+    let rain = null;
+    function startRain() {
+      if (rain) return;
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      rain = ctx;
+      ctx.resume();
+      fetch("rain.wav").then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)).then(buf => {
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        src.connect(ctx.destination);
+        src.start();
+      }).catch(() => {});
+    }
+    addEventListener("pointerdown", startRain, { once: true });
+    addEventListener("keydown", startRain, { once: true });
+
+    // "play our song" starts the YouTube player below.
+    let player = null;
+    window.onYouTubeIframeAPIReady = () => { player = new YT.Player("song"); };
+    const api = document.createElement("script");
+    api.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(api);
+    document.querySelector(".play").addEventListener("click", () => {
+      startRain();
+      if (player && player.playVideo) player.playVideo();
+    });
+  </script>
 </body>
 </html>
